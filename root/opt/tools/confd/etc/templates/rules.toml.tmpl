@@ -1,26 +1,26 @@
 [backends]
-{{range $s, $stack_name := ls "/stacks"}}{{range $i, $service_name := ls (printf "/stacks/%s/services" $stack_name)}}{{if exists (printf "/stacks/%s/services/%s/labels/traefik.port" $stack_name $service_name)}}
+{{- range $s, $stack_name := ls "/stacks" -}}{{- range $i, $service_name := ls (printf "/stacks/%s/services" $stack_name) -}}{{- if exists (printf "/stacks/%s/services/%s/labels/traefik.port" $stack_name $service_name) -}}
     [backends.{{$service_name}}__{{$stack_name}}]
         [backends.{{$service_name}}__{{$stack_name}}.circuitbreaker]
             expression = "NetworkErrorRatio() > 0.5"
         [backends.{{$service_name}}__{{$stack_name}}.LoadBalancer]
-            method = "drr"{{range $i2, $container := ls (printf "/stacks/%s/services/%s/containers" $stack_name $service_name)}}{{$back_status := getv (printf "/stacks/%s/services/%s/containers/%s/health_state" $stack_name $service_name $container)}}{{if eq $back_status "healthy"}}
+            method = "drr"{{- range $i2, $container := ls (printf "/stacks/%s/services/%s/containers" $stack_name $service_name) -}}{{- $back_status := getv (printf "/stacks/%s/services/%s/containers/%s/health_state" $stack_name $service_name $container) -}}{{- if eq $back_status "healthy" -}}
         [backends.{{$service_name}}__{{$stack_name}}.servers.{{getv (printf "/stacks/%s/services/%s/containers/%s/name" $stack_name $service_name $container)}}]
             url = "http://{{getv (printf "/stacks/%s/services/%s/containers/%s/primary_ip" $stack_name $service_name $container)}}:{{getv (printf "/stacks/%s/services/%s/labels/traefik.port" $stack_name $service_name)}}"
-            weight = 0{{end}}{{end}}
-{{end}}{{end}}{{end}}
+            weight = 0{{- end -}}{{- end -}}
+{{- end -}}{{- end -}}{{- end- }}
 [frontends]
-{{range $s, $stack_name := ls "/stacks"}}{{range $i, $service_name := ls (printf "/stacks/%s/services" $stack_name)}}{{if exists (printf "/stacks/%s/services/%s/labels/traefik.port" $stack_name $service_name)}}
+{{- range $s, $stack_name := ls "/stacks" -}}{{- range $i, $service_name := ls (printf "/stacks/%s/services" $stack_name) -}}{{- if exists (printf "/stacks/%s/services/%s/labels/traefik.port" $stack_name $service_name) -}}
     [frontends.{{$service_name}}__{{$stack_name}}]
         backend = "{{$service_name}}__{{$stack_name}}"
         passHostHeader = true
         [frontends.{{$service_name}}__{{$stack_name}}.routes.service]
-{{$envname := getv (printf "/self/stack/environment_name")}}
-{{if exists (printf "/stacks/%s/services/%s/labels/traefik.subdomain" $stack_name $service_name)}}
-        {{$traefik_subdomain := getv (printf "/stacks/%s/services/%s/labels/traefik.subdomain" $stack_name $service_name)}}
+{{- $envname := getv (printf "/self/stack/environment_name") -}}
+{{- if exists (printf "/stacks/%s/services/%s/labels/traefik.subdomain" $stack_name $service_name) -}}
+        {{- $traefik_subdomain := getv (printf "/stacks/%s/services/%s/labels/traefik.subdomain" $stack_name $service_name) -}}
         rule = "Host:{{$traefik_subdomain}}.{{getenv "TRAEFIK_DOMAIN"}}"
-{{else}}
+{{- else -}}
         rule = "Host:{{toLower $service_name}}{{getenv "TRAEFIK_SEPARATOR"}}{{toLower $stack_name}}{{getenv "TRAEFIK_SEPARATOR"}}{{$envname}}.{{getenv "TRAEFIK_DOMAIN"}}"
-{{end}}
-{{end}}
-{{end}}{{end}}
+{{- end -}}
+{{- end -}}
+{{- end -}}{{- end -}}

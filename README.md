@@ -1,3 +1,5 @@
+[![](https://images.microbadger.com/badges/image/rawmind/rancher-traefik.svg)](https://microbadger.com/images/rawmind/rancher-traefik "Get your own image badge on microbadger.com")
+
 rancher-traefik
 ==============
 
@@ -11,8 +13,8 @@ docker build -t rawmind/rancher-traefik:<version> .
 
 ## Versions
 
+- `0.3.4-6` [(Dockerfile)](https://github.com/rawmind0/rancher-traefik/blob/0.3.4-6/Dockerfile)
 - `0.3.4` [(Dockerfile)](https://github.com/rawmind0/rancher-traefik/blob/0.3.4/Dockerfile)
-- `0.0.1-14` [(Dockerfile)](https://github.com/rawmind0/rancher-traefik/blob/0.0.1-14/Dockerfile)
 
 
 ## Usage
@@ -24,14 +26,14 @@ This image has to be run as a sidekick of [rawmind/alpine-traefik][alpine-traefi
 
 Traefik labels, has to be created in your service, in order to get included in traefik dynamic config. 
 
-- traefik.enable = *true | stack | false* #Controls if you want to publish or not the service
+- traefik.enable = < true | stack | false > #Controls if you want to publish or not the service
   - true: the service will be published as *service_name.stack_name.traefik_domain*
-  - stack: the service will be published as *stack_name.domain*. WARNING: You can have collisions inside services within yout stack
+  - stack: the service will be published as *stack_name.domain*. WARNING: You can have collisions inside services within your stack
   - false: the service will not be published
-- traefik.domain	= *Domain names to route rules. Multiple domains separated by ","*
-- traefik.port = *port to expose throught traefik*
-- traefik.separator = *separator between service name and stack name, can be useful for wildcard certificates*
-- traefik.subdomain = the service will be published as *subdomain.traefik_domain*
+  - traefik.domain	= *Domain names to route rules. Multiple domains separated by ","*
+  - traefik.port = *port to expose throught traefik*
+  - traefik.separator = *separator between service name and stack name, can be useful for wildcard certificates*
+  - traefik.subdomain = the service will be published as *subdomain.traefik_domain*
 
 WARNING: Only services with healthy state are added to traefik, so health checks are mandatory.
 
